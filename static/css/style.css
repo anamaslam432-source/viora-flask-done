@@ -319,7 +319,25 @@ footer .fso a:hover,footer .fso a:focus-visible{background:#8B6A4A;color:#fff;tr
 nav ul{flex-wrap:nowrap!important;overflow-x:auto!important;gap:8px!important;justify-content:flex-start!important;padding-left:10px!important;padding-right:10px!important}
 nav ul li a{font-size:10px!important;white-space:nowrap!important;letter-spacing:0.5px!important}
 }
-
+/* LOGO LEFT ON PHONE - FINAL */
+@media (max-width:768px){
+  header .wrap.nav{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    text-align:left!important;
+  }
+  header .logo,
+  header .wrap.nav .logo,
+  header .wrap.nav a.logo{
+    margin-left:0!important;
+    margin-right:auto!important;
+    align-self:flex-start!important;
+    text-align:left!important;
+    display:block!important;
+    width:fit-content!important;
+  }
+}
 
 nav ul{flex-wrap:nowrap!important;overflow-x:auto!important;gap:8px!important;justify-content:flex-start!important;padding-left:10px!important;padding-right:10px!important}
 nav ul li a{font-size:10px!important;white-space:nowrap!important;letter-spacing:0.5px!important}
