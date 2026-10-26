@@ -1,0 +1,4 @@
+id,title,original_price,offer_price,discount,description,image_url,is_active
+luminous-deal-1,Luminous Skin Packages: Deal 1,,4000,,Standard Hydra Facial,,TRUE
+luminous-deal-2,Luminous Skin Packages: Deal 2,,10000,,Hydra Facial with whitening drip,,TRUE
+three-in-one,3-in-1 Offer,,20000,,BB Glow + Basic Hydra + Light Therapy,,TRUE
