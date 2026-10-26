@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Deals &amp; Offers | VIORA Aesthetics, Mirpur AJK{% endblock %}
+
+{% block content %}
+<section id="deals"><div class="wrap">
+  <div class="hd c"><span class="eyebrow">Special Packages</span><h1>Deals &amp; Offers</h1><p>Current packages from the clinic. Confirm availability when you book.</p></div>
+  {# Cards are created by the script at the bottom of this file from your Google Sheet. #}
+  <div class="grid" id="dg" aria-live="polite" aria-busy="true">
+    <div class="dl" role="status"><span class="sp" aria-hidden="true"></span>Loading latest offers…</div>
+  </div>
+  <noscript><p class="dempty">Please enable JavaScript to see our offers, or call <a href="tel:+923038922114">0303 8922114</a>.</p></noscript>
+  <p class="swipe">Swipe to see more offers →</p>
+</div></section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+/* =====================================================================
+   DEALS & OFFERS  -  live prices from Google Sheets
+   ---------------------------------------------------------------------
+   HOW IT WORKS
+   1. FLASK MODE (default, recommended): this page calls /api/prices.
+      app.py reads your Google Sheet and sends the deals back.
+      -> Paste your Google Sheet link in app.py (GOOGLE_SHEET_CSV_URL).
+   2. STATIC MODE (no Flask): paste the link in the constant below and
+      the visitor's browser will read the sheet directly.
+      -> Leave it as "PASTE HERE" when you use Flask mode.
+   Prices are cached for 5 minutes. If the sheet cannot be loaded, the
+   last saved prices (or the fallback deals below) are shown instead.
+   ===================================================================== */
+(function () {
+  "use strict";
+
+  /* ---------- SETTINGS ---------- */
+  const GOOGLE_SHEET_CSV_URL = "PASTE HERE";           // <-- STATIC MODE ONLY (see above)
+  const API_URL   = "{{ url_for('api_prices') }}";     // Flask route that reads the sheet
+  const BOOK_URL  = "{{ url_for('index') }}#book";     // where "Book" buttons go
+  const CACHE_KEY = "viora_deals_cache_v1";
+  const CACHE_MS  = 5 * 60 * 1000;                     // 5 minutes
+
+  /* Shown only if the sheet AND the saved copy are both unavailable.
+     Edit these if the clinic's standard prices change. */
+  const FALLBACK_DEALS = [
+    { title: "Luminous Skin Packages: Deal 1", desc: "Standard Hydra Facial", offer: 4000 },
+    { title: "Luminous Skin Packages: Deal 2", desc: "Hydra Facial with whitening drip", offer: 10000 },
+    { title: "3-in-1 Offer", desc: "BB Glow + Basic Hydra + Light Therapy", offer: 20000 }
+  ];
+
+  const grid = document.getElementById("dg");
+  if (!grid) return;
+
+  /* ---------- helpers ---------- */
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const money = n => "Rs. " + Number(n).toLocaleString("en-US");
+  const toNum = v => { const n = parseInt(String(v == null ? "" : v).replace(/[^\d]/g, ""), 10); return isNaN(n) ? null : n; };
+  const isTrue = v => ["TRUE", "YES", "Y", "1"].includes(String(v == null ? "" : v).trim().toUpperCase());
+  const safeImg = u => { u = String(u || "").trim(); return /^(https?:\/\/|\/)/i.test(u) ? u : ""; };
+
+  /* Small CSV parser (handles quotes, commas and line breaks inside cells). */
+  function parseCSV(text) {
+    const rows = []; let row = [], cell = "", q = false;
+    text = String(text).replace(/^\uFEFF/, "");
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { cell += '"'; i++; } else q = false; }
+        else cell += c;
+      } else if (c === '"') q = true;
+      else if (c === ",") { row.push(cell); cell = ""; }
+      else if (c === "\n" || c === "\r") {
+        if (c === "\r" && text[i + 1] === "\n") i++;
+        row.push(cell); cell = ""; rows.push(row); row = [];
+      } else cell += c;
+    }
+    if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
+    return rows.filter(r => r.some(x => String(x).trim() !== ""));
+  }
+
+  /* Sheet rows -> clean deal objects. Inactive or incomplete rows are dropped. */
+  function sheetToDeals(csvText) {
+    const rows = parseCSV(csvText);
+    if (rows.length < 2) return [];
+    const head = rows[0].map(h => h.trim().toLowerCase());
+    return rows.slice(1).map(r => {
+      const o = {}; head.forEach((h, i) => o[h] = (r[i] || "").trim()); return o;
+    }).filter(o => isTrue(o.is_active) && o.title && toNum(o.offer_price) != null).map(o => {
+      const orig = toNum(o.original_price), offer = toNum(o.offer_price);
+      let disc = o.discount;
+      if (!disc && orig && orig > offer) disc = Math.floor((orig - offer) / orig * 100) + "% OFF";
+      return { id: o.id, title: o.title, desc: o.description, orig: orig, offer: offer, disc: disc, img: safeImg(o.image_url) };
+    });
+  }
+
+  /* Accepts both our own JSON (from /api/prices) and fallback objects. */
+  function normalise(list) {
+    return list.map(d => ({
+      id: d.id, title: d.title, desc: d.desc || d.description || "",
+      orig: toNum(d.orig != null ? d.orig : d.original_price),
+      offer: toNum(d.offer != null ? d.offer : d.offer_price),
+      disc: d.disc || d.discount || "", img: safeImg(d.img || d.image_url)
+    })).filter(d => d.title && d.offer != null);
+  }
+
+  /* ---------- rendering ---------- */
+  function card(d) {
+    const was = d.orig && d.orig > d.offer ? '<s class="was" aria-label="Original price">' + money(d.orig) + "</s>" : "";
+    const img = d.img ? '<img class="dimg" src="' + esc(d.img) + '" alt="' + esc(d.title) + '" loading="lazy">' : "";
+    const href = BOOK_URL.replace("#book", "?treatment=" + encodeURIComponent(d.title) + "#book");
+    return '<article class="card dcard">' + img + '<div class="cb"><span class="tag">' + esc(d.disc || "Offer") + "</span>" +
+      "<h3>" + esc(d.title) + "</h3><p>" + esc(d.desc) + '</p><div class="pr"><span class="price">' + money(d.offer) + "</span>" + was +
+      '</div><a class="btn sm" href="' + esc(href) + '">Book a Consultation</a></div></article>';
+  }
+  function render(deals, note) {
+    grid.setAttribute("aria-busy", "false");
+    if (!deals.length) {
+      grid.innerHTML = '<div class="dempty"><h3>No offers right now</h3><p>New packages are coming soon. Call us on <a href="tel:+923038922114">0303 8922114</a> for the latest prices.</p></div>';
+      return;
+    }
+    grid.innerHTML = (note ? '<p class="dnote">' + esc(note) + "</p>" : "") + deals.map(card).join("");
+  }
+
+  /* ---------- cache (localStorage, 5 minutes) ---------- */
+  function readCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY)); } catch (e) { return null; } }
+  function writeCache(deals) { try { localStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), deals: deals })); } catch (e) {} }
+
+  /* ---------- loading ---------- */
+  const staticMode = /^https?:\/\//i.test(GOOGLE_SHEET_CSV_URL);
+  async function fetchLive() {
+    if (staticMode) {                                   // browser reads the sheet itself
+      const r = await fetch(GOOGLE_SHEET_CSV_URL, { cache: "no-store" });
+      if (!r.ok) throw new Error("Sheet HTTP " + r.status);
+      return sheetToDeals(await r.text());
+    }
+    const r = await fetch(API_URL, { headers: { Accept: "application/json" } });   // Flask mode
+    if (!r.ok) throw new Error("API HTTP " + r.status);
+    return normalise((await r.json()).deals || []);
+  }
+
+  async function load() {
+    const cached = readCache();
+    if (cached && Array.isArray(cached.deals) && Date.now() - cached.t < CACHE_MS) {
+      render(normalise(cached.deals)); return;          // fresh enough, no network call
+    }
+    try {
+      const deals = await fetchLive();
+      writeCache(deals); render(deals);
+    } catch (err) {
+      if (window.console) console.warn("Deals: could not load Google Sheet.", err);
+      if (cached && Array.isArray(cached.deals)) render(normalise(cached.deals), "Showing our last saved prices. Please confirm at booking.");
+      else render(normalise(FALLBACK_DEALS), "Live prices could not be loaded. Showing our standard offers; please confirm at booking.");
+    }
+  }
+  load();
+})();
+</script>
+{% endblock %}

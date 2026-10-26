@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}About Us | VIORA Aesthetics, Mirpur AJK{% endblock %}
+
+{% block content %}
+<section id="about"><div class="abn"><img src="{{ url_for('static', filename='images/clinic-reception.jpg') }}" alt="VIORA Aesthetics clinic reception with the VIORA logo" width="2000" height="625"><div class="abt"><h2>Welcome To Viora Aesthetics</h2><p>Where Beauty Meets Expertise</p><a class="abb" href="{{ url_for('index') }}#book">Book Free Consultation</a></div></div><div class="wrap about"><img src="{{ url_for('static', filename='images/about-viora-treatments.jpg') }}" alt="VIORA Aesthetics treatments: Hydra, BB Glow, Carbon Peel, Whitening Drips, Microneedling, Light Therapy, Hair Removal" loading="lazy" width="1024" height="768"><div><div class="hd" style="margin:0"><span class="eyebrow">Our Story</span><h1>About VIORA Aesthetics</h1></div>
+<p id="abp" class="clamp">VIORA Aesthetics is an aesthetic clinic in Mirpur, AJK. We believe good skincare begins with listening, so every visit starts with a one-to-one consultation about your skin, your goals and what suits you.</p>
+<div id="abx" hidden><ul><li>Personalised treatment guidance, not one-size-fits-all packages</li><li>A calm, clean and welcoming clinic experience</li><li>Honest advice on what each treatment can and cannot do</li></ul></div>
+<div class="acts2"><button class="rm" id="rm" aria-expanded="false" aria-controls="abx">Read More</button><a class="btn" href="{{ url_for('index') }}#book">Book a Consultation</a></div></div></div></section>
+{% endblock %}

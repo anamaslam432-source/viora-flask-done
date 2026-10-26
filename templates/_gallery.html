@@ -1,0 +1,2 @@
+{# Shared gallery grid. Used by BOTH index.html and gallery.html. Photos and order come from GALLERY in app.py. #}
+<div class="gal">{% for g in gallery_items %}<button class="gi" data-k="{{ g.key }}" aria-label="Open photo: {{ g.alt }}"><img src="{{ url_for('static', filename='images/' ~ g.file) }}?v={{ asset_v }}" alt="{{ g.alt }}" loading="lazy"></button>{% endfor %}</div>
