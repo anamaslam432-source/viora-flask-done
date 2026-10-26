@@ -315,22 +315,11 @@ footer .fso a{display:grid;place-items:center;width:44px;height:44px;border-radi
 footer .fso a .si{width:21px;height:21px;color:inherit}
 footer .fso a:hover,footer .fso a:focus-visible{background:#8B6A4A;color:#fff;transform:translateY(-3px)}
 @media(max-width:560px){.ci li{font-size:17px}}
-
 @media (max-width:768px){
-  header .wrap.nav{
-    display:flex!important;
-    flex-direction:row-reverse!important;
-    justify-content:space-between!important;
-    align-items:center!important;
-  }
-  /* Menu ko wapas show karo jo hide ho gaya tha */
-  header .wrap.nav nav,
-  header .wrap.nav .links,
-  header .wrap.nav ul{
-    display:flex!important;
-  }
+nav ul{flex-wrap:nowrap!important;overflow-x:auto!important;gap:8px!important;justify-content:flex-start!important;padding-left:10px!important;padding-right:10px!important}
+nav ul li a{font-size:10px!important;white-space:nowrap!important;letter-spacing:0.5px!important}
 }
-   
+
 
 nav ul{flex-wrap:nowrap!important;overflow-x:auto!important;gap:8px!important;justify-content:flex-start!important;padding-left:10px!important;padding-right:10px!important}
 nav ul li a{font-size:10px!important;white-space:nowrap!important;letter-spacing:0.5px!important}
