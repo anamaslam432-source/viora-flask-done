@@ -259,7 +259,7 @@ footer .logo,footer .logo span{color:#5C4033!important}footer .logo small{color:
 .hero3{background:#E4CB8E}
 .h3f{width:100%;max-width:1400px}
 /* multi-page additions (inner pages only) */
-.crumb{background:#F5F1EB;border-bottom:1px solid #E8D5C4}.crumb .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:10px;padding-bottom:10px;font:600 13px/1.2 Jost,sans-serif;letter-spacing:.12em;text-transform:uppercase}.crumb a{text-decoration:none;color:#8B6A4A}.crumb a:hover{color:#5C4033}.crumb span{color:#5C4033}
+
 .hd h1{font-size:clamp(38px,5vw,58px);line-height:1.05;font-weight:600;margin-bottom:12px}.hd h1::after{content:"";display:block;width:56px;height:3px;background:var(--gold);margin-top:18px}.hd.c h1::after{margin-inline:auto}
 .about h1{font-size:clamp(36px,4.6vw,52px)}
 
@@ -314,6 +314,32 @@ footer .si{flex:0 0 auto;width:20px;height:20px;color:#8B6A4A;transition:color .
 footer .fso a{display:grid;place-items:center;width:44px;height:44px;border-radius:50%;border:1.5px solid #8B6A4A;color:#5C4033;transition:background .25s,color .25s,transform .25s}
 footer .fso a .si{width:21px;height:21px;color:inherit}
 footer .fso a:hover,footer .fso a:focus-visible{background:#8B6A4A;color:#fff;transform:translateY(-3px)}
+
+/* ===== MOBILE HEADER (phones, under 768px): logo left, hamburger right, vertical menu drawer =====
+   Desktop and tablet (768px and wider) are NOT touched by anything below. */
+@media(max-width:767px){
+  header{border-bottom:0}                                  /* no line under the brown header */
+  .nav{flex-direction:row;justify-content:space-between;align-items:center;gap:12px;min-height:0;padding-top:6px;padding-bottom:6px}
+  .lg2{width:110px;height:auto}                            /* small logo, on the left */
+  nav{width:auto;flex:none;overflow:visible}
+
+  /* hamburger (3 lines) on the right */
+  #tg{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;width:48px;height:48px;padding:0;margin:0;background:none;border:0;border-radius:8px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+  #tg span{display:block;width:28px;height:3px;border-radius:2px;background:#fff;transition:transform .25s,opacity .2s}
+  #tg[aria-expanded="true"] span:nth-child(1){transform:translateY(9px) rotate(45deg)}
+  #tg[aria-expanded="true"] span:nth-child(2){opacity:0}
+  #tg[aria-expanded="true"] span:nth-child(3){transform:translateY(-9px) rotate(-45deg)}
+  #tg:focus-visible{outline:2px solid #F3DE9B;outline-offset:2px}
+
+  /* the menu: hidden until the hamburger is tapped, then a vertical drawer under the header */
+  #m{position:absolute;left:0;right:0;top:100%;z-index:25;display:flex;flex-direction:column;align-items:stretch;flex-wrap:nowrap;gap:0;width:auto;margin:0;padding:6px 22px 22px;background:var(--hdr);box-shadow:0 18px 28px rgba(0,0,0,.28);max-height:calc(100vh - 100%);overflow-y:auto;visibility:hidden;opacity:0;transform:translateY(-10px);transition:opacity .22s,transform .22s,visibility 0s .22s}
+  #m.open{visibility:visible;opacity:1;transform:none;transition:opacity .22s,transform .22s,visibility 0s}
+  #m li{display:block;border-bottom:1px solid rgba(255,255,255,.16)}
+  #m li::before{display:none!important}
+  #m li a:not(.bkb){display:block;padding:15px 2px;font-size:15px;letter-spacing:.1em}
+  #m li:last-child{border-bottom:0;margin-top:16px}
+  #m .bkb{display:block;text-align:center;padding:13px 18px}
+}
 @media(max-width:560px){.ci li{font-size:17px}}
 /* FINAL FIX - Services filters ek line me */
 @media (max-width:768px){
