@@ -320,7 +320,7 @@ footer .fso a:hover,footer .fso a:focus-visible{background:#8B6A4A;color:#fff;tr
 @media(max-width:767px){
   header{border-bottom:0}                                  /* no line under the brown header */
   .nav{flex-direction:row;justify-content:space-between;align-items:center;gap:12px;min-height:0;padding-top:6px;padding-bottom:6px}
-    .lg2{width:75px;height:auto}                             /* small logo, on the left */                            /* small logo, on the left */
+    .lg2{width:110px;height:auto}                             /* small logo, on the left */                            /* small logo, on the left */
   nav{width:auto;flex:none;overflow:visible}
 
   /* hamburger (3 lines) on the right */
