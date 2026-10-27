@@ -43,8 +43,13 @@ const $=id=>document.getElementById(id),sg=$("sg"),sel=$("sel"),dg=$("dg"),tgd=$
 if(sg)sg.innerHTML=G.map(g=>`<div class="grp"><h3 class="gt">${g[0]}</h3><div class="mn">${g[1].map(i=>`<a class="mi" href="${home?"":"/?treatment="+encodeURIComponent(S[i][0])}#book" data-t="${S[i][0]}">${PH[i]?`<span class="ph2" style="--bg:url(${PH[i]})"><img class="il" style="object-position:50% ${i==5?'56%':'50%'}" src="${PH[i]}" alt="${S[i][0]}" loading="lazy"></span>`:`<svg class="il" viewBox="0 0 200 120" role="img" aria-label="${S[i][0]}">${ILL[i]}</svg>`}<span class="tx"><b>${S[i][0]}</b><span>${S[i][1]}</span></span><span class="go btn sm">Book Now</span></a>`).join("")}</div></div>`).join("");
 if(sel){sel.innerHTML='<option value="">Not sure yet</option>'+S.map(s=>`<option>${s[0]}</option>`).join("");const q=new URLSearchParams(location.search).get("treatment");if(q)sel.value=q}
 if(tgd)tgd.innerHTML=[["Dr. Khola Ishtiaq","MBBS Medical Practitioner<br>D-Aesthetics London<br>Aesthetics UK"],["Dr. Mussa Khalid","MBBS Medical Practitioner"]].map(t=>`<article class="tm"><div class="tp" role="img" aria-label="Photo placeholder"><span>Photo</span></div><h3>${t[0]}</h3><p class="tq">${t[1]}</p></article>`).join("");
-document.addEventListener("click",e=>{const a=e.target.closest("[data-t]");if(a&&sel)sel.value=a.dataset.t;if(m&&e.target.closest("#m a"))m.classList.remove("open")});
+/* mobile menu (hamburger): open/close, and keep the 3-line icon in sync */
+const closeMenu=()=>{if(m)m.classList.remove("open");if(tg)tg.setAttribute("aria-expanded","false")};
+document.addEventListener("click",e=>{const a=e.target.closest("[data-t]");if(a&&sel)sel.value=a.dataset.t;if(m&&(e.target.closest("#m a")||(m.classList.contains("open")&&!e.target.closest("header"))))closeMenu()});
 if(tg)tg.onclick=()=>{const o=m.classList.toggle("open");tg.setAttribute("aria-expanded",o)};
+addEventListener("keydown",e=>{if(e.key==="Escape"&&m&&m.classList.contains("open")){closeMenu();if(tg)tg.focus()}});
+matchMedia("(min-width:768px)").addEventListener("change",e=>{if(e.matches)closeMenu()});
+
 const WA="923038922114";/* clinic WhatsApp number: country code + number, digits only, e.g. 923001234567 */
 if(wab)wab.href=`https://wa.me/${WA}?text=${encodeURIComponent("Hello VIORA Aesthetics, I would like to book a consultation.")}`;
 if(f)f.onsubmit=e=>{e.preventDefault();const d=new FormData(f);const msg=`Hello VIORA Aesthetics, I would like to book a consultation.\nName: ${d.get("n")}\nPhone: ${d.get("p")}\nTreatment: ${d.get("t")||"Not sure yet"}`+(d.get("m")?`\nMessage: ${d.get("m")}`:"");ok.style.display="block";window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`,"_blank","noopener");f.reset()};
